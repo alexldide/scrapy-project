@@ -17,7 +17,7 @@ class Redfin(scrapy.Spider):
 
     def parse_agents(self, response: Response):
         agents = response.xpath("//div[@class='agents']/div/a[1]/@href")
-        yield from response.follow_all(urls=agents, callback=parse_agent)
+        yield from response.follow_all(urls=agents, callback=self.parse_agent)
 
     def parse_agent(self, response: Response):
         loader = ItemLoader(item=RedFinItem(), response=response)
