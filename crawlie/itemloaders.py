@@ -1,4 +1,5 @@
 import scrapy
+from itemloaders.processors import TakeFirst
 
 
 class Take5Item(scrapy.Item):
@@ -14,6 +15,6 @@ class Take5Item(scrapy.Item):
 
 
 class RedFinItem(scrapy.Item):
-    agent_id = scrapy.Field()
-    full_name = scrapy.Field()
-    phone_number = scrapy.Field()
+    agent_id = scrapy.Field(output_processor=TakeFirst())
+    full_name = scrapy.Field(output_processor=TakeFirst())
+    phone_number = scrapy.Field(output_processor=TakeFirst())

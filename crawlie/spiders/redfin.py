@@ -2,6 +2,7 @@ import scrapy
 from scrapy.http import Response
 from scrapy.loader import ItemLoader
 from crawlie.itemloaders import RedFinItem
+from crawlie.processors import RemoveRegex
 
 
 class Redfin(scrapy.Spider):
@@ -16,14 +17,14 @@ class Redfin(scrapy.Spider):
             yield response.follow(url=agents_url, callback=self.parse_agents, priority=1)
 
     def parse_agents(self, response: Response):
-        agents = response.xpath("//div[@class='agents']/div/a[1]/@href")
+        agents = response.xpath("//div[@class='agents']/div/a[1]/@href").getall()
         yield from response.follow_all(urls=agents, callback=self.parse_agent_details)
 
     def parse_agent_details(self, response: Response):
         loader = ItemLoader(item=RedFinItem(), response=response)
 
-        loader.add_xpath('full_name', "//div[@class='agent-name']/h1/text()")
+        loader.add_xpath('full_name', "//div[contains(@class,'agent-name')]/h1/text()")
         loader.add_xpath('agent_id', "//div[contains(.,'License')]/text()", re=r'\d+')
-        loader.add_xpath('phone_number', "//div[@class='number']/a/text()")
+        loader.add_xpath('phone_number', "//div[@class='number']/a/text()", RemoveRegex(r'[^\d]'))
 
         yield loader.load_item()
