@@ -3,6 +3,7 @@ import re
 from scrapy.spiders import SitemapSpider
 from scrapy.loader import ItemLoader
 from crawlie.itemloaders import Take5Item
+from crawlie.processors import RemoveRegex
 
 
 class Take5(SitemapSpider):
@@ -17,7 +18,7 @@ class Take5(SitemapSpider):
         loader = ItemLoader(item=Take5Item(), response=response)
 
         loader.add_value('id', re.findall(r'\d{3,}', response.url)[0])
-        loader.add_xpath('name', "//h1/text()")
+        loader.add_xpath('name', "normalize-space(//h1/text())", RemoveRegex(r'-.*'))
         loader.add_value('latitude', data.get('geo')['latitude'])
         loader.add_value('longitude', data.get('geo')['longitude'])
         loader.add_value('address', ", ".join(list(data.get('address').values())[1:]))
