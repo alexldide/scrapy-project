@@ -1,5 +1,4 @@
 import re
-from crawler.loader.processors import StripAndRemoveConsecutiveSpaces
 from itemloaders import arg_to_iter
 
 
@@ -43,3 +42,8 @@ class RemoveRegex(object):
             raise ValueError('Invalid patten data type provided. The regex pattern has to be "str".')
         except re.error:
             raise ValueError("Invalid patterns were found. Please ensure that you didn't miss anything")
+
+
+class StripAndRemoveConsecutiveSpaces(object):
+    def __call__(self, value):
+        return re.sub(r'\s+', ' ', value).strip(' \r\n\t') if isinstance(value, str) else None
